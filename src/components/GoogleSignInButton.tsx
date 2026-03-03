@@ -1,5 +1,4 @@
-// src/components/GoogleSignInButton.tsx
-import React, { memo } from 'react'
+import { memo } from 'react'
 
 interface GoogleSignInButtonProps {
   onClick: () => void

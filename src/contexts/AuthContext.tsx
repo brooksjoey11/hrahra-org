@@ -1,5 +1,4 @@
-// src/contexts/AuthContext.tsx
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react'
 
 interface AuthContextType {
   isAuthenticated: boolean
@@ -16,20 +15,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
 
+  // Check auth status on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/user', { credentials: 'include' })
+        if (res.ok) {
+          const userData = await res.json()
+          if (userData) {
+            setUser(userData)
+            setIsAuthenticated(true)
+          }
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error)
+      }
+    }
+    checkAuth()
+  }, [])
+
   const login = useCallback(async () => {
     setIsLoading(true)
-    try {
-      window.location.href = '/api/auth/google'
-    } catch (error) {
-      console.error('Login failed:', error)
-      setIsLoading(false)
-    }
+    // Redirect happens, loading state will clear on return
+    window.location.href = '/api/auth/google'
   }, [])
 
   const logout = useCallback(async () => {
     setIsLoading(true)
     try {
-      await fetch('/api/auth/logout', { method: 'POST' })
+      await fetch('/api/auth/logout', { 
+        method: 'POST',
+        credentials: 'include' 
+      })
       setIsAuthenticated(false)
       setUser(null)
     } catch (error) {

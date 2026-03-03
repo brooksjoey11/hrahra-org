@@ -1,6 +1,4 @@
-// server/auth.js - Place this in your backend service
-// This runs separately from your React frontend (Node.js/Express example)
-
+// /opt/1panel/apps/openresty/openresty/www/sites/hrahra.org/backend/auth.js
 const express = require('express')
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
@@ -29,7 +27,7 @@ passport.use(new GoogleStrategy({
     callbackURL: '/api/auth/google/callback'
   },
   (accessToken, refreshToken, profile, done) => {
-    // Store user profile in session
+    // You can save/update user in database here
     return done(null, profile)
   }
 ))
@@ -37,12 +35,10 @@ passport.use(new GoogleStrategy({
 passport.serializeUser((user, done) => done(null, user))
 passport.deserializeUser((user, done) => done(null, user))
 
-// Your frontend hits this endpoint
 app.get('/api/auth/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
 )
 
-// Google redirects here after auth
 app.get('/api/auth/google/callback',
   passport.authenticate('google', { 
     successRedirect: 'https://hrahra.org/dashboard',
@@ -50,9 +46,10 @@ app.get('/api/auth/google/callback',
   })
 )
 
-app.get('/api/auth/logout', (req, res) => {
-  req.logout()
-  res.redirect('https://hrahra.org/')
+app.post('/api/auth/logout', (req, res) => {
+  req.logout(() => {
+    res.json({ success: true })
+  })
 })
 
 app.get('/api/auth/user', (req, res) => {
