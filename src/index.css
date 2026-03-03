@@ -1,0 +1,16 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply backdrop-blur-lg bg-white/5 border border-white/10;
+  }
+}
